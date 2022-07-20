@@ -1,6 +1,6 @@
-package logic;
+package logic.location;
 
-public class Cords {
+public final class Cords {
     private final int x;
     private final int y;
 
