@@ -1,6 +1,8 @@
 package logic;
 
-import java.util.Observable;
+import logic.location.GameField;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class GameSession extends Observable {
     public enum Difficulty {
@@ -17,15 +19,28 @@ public class GameSession extends Observable {
         }
     }
 
-    private final Field field;
+    public enum State {
+        RUNNING, LOSE, WIN;
+    }
+
+    private final GameField field;
+    private State state;
     private int flags;
     private int time;
 
     public GameSession(Difficulty difficulty) {
-        field = new Field(difficulty.width, difficulty.height);
+        field = new GameField(difficulty.width, difficulty.height);
         field.setUpMines(difficulty.mines);
         field.setUpMineRange();
+        state = State.RUNNING;
         flags = difficulty.mines;
+    }
+
+    public void start() {
+        state = State.RUNNING;
+        startTimer();
+        setChanged();
+        notifyObservers("state");
     }
 
     public int getFlags() {
@@ -34,17 +49,43 @@ public class GameSession extends Observable {
 
     public void increaseFlags() {
         flags++;
+        setChanged();
+        notifyObservers("flags");
     }
 
     public void decreaseFlags() {
         flags--;
+        setChanged();
+        notifyObservers("flags");
     }
 
     public int getTime() {
         return time;
     }
 
-    public Field getField() {
+    public void startTimer() {
+        ScheduledExecutorService timer = Executors.newScheduledThreadPool(1);
+        timer.scheduleWithFixedDelay(() -> {
+            if (state != State.RUNNING) {
+                timer.shutdown();
+            }
+            time++;
+            setChanged();
+            notifyObservers("time");
+        }, 1, 1, TimeUnit.SECONDS);
+    }
+
+    public GameField getField() {
         return field;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+        setChanged();
+        notifyObservers("state");
+    }
+
+    public State getState() {
+        return state;
     }
 }
