@@ -1,6 +1,8 @@
 package logic;
 
-public class Field {
+import java.util.*;
+
+public class Field extends Observable {
     private final int width;
     private final int height;
     private final Cell[][] grid;
@@ -14,6 +16,14 @@ public class Field {
                 grid[y][x] = new Cell(0);
             }
         }
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 
     public void setUpMines(int mines) {
@@ -86,17 +96,15 @@ public class Field {
         return grid[cords.getY()][cords.getX()].isOpened();
     }
 
+    public void openAt(Cords cords) {
+        grid[cords.getY()][cords.getX()].open();
+    }
+
     public boolean isFlagedAt(Cords cords) {
         return grid[cords.getY()][cords.getX()].isFlaged();
     }
 
-    public void print() {
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                System.out.printf("%4d", grid[y][x].getValue());
-            }
-            System.out.println();
-        }
+    public void flagAt(Cords cords) {
+        grid[cords.getY()][cords.getX()].flag();
     }
 }
-

@@ -18,7 +18,9 @@ public class Cell {
     }
 
     public void open() {
-        opened = true;
+        if (!flaged) {
+            opened = true;
+        }
     }
 
     public boolean isFlaged() {
@@ -26,10 +28,8 @@ public class Cell {
     }
 
     public void flag() {
-        if (flaged) {
-            flaged = false;
-        } else {
-            flaged = true;
+        if (!opened) {
+            flaged = !flaged;
         }
     }
 }
